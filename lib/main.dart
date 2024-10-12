@@ -1038,11 +1038,15 @@ class _DominoFormState extends State<DominoForm> {
           }),
         ),
         const Divider(
-          color: Colors.red,
-          height: 10,
+          color: Colors.blue,
+          height: 5,
           thickness: 2,
-          indent: 20,
-          endIndent: 20,
+          indent: 5,
+          endIndent: 5,
+        ),
+        const Text(
+          style: TextStyle(fontSize: 20, color: Colors.green),
+          ' Selection ',
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
