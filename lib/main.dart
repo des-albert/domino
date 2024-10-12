@@ -39,10 +39,10 @@ class DominoForm extends StatefulWidget {
 }
 
 class _DominoFormState extends State<DominoForm> {
-  double iconHeight = 60.0;
-  double iconWidth = 35.0;
+  double iconHeight = 50.0;
+  double iconWidth = 30.0;
   double boxWidth = 40.0;
-  double boxHeight = 40.0;
+  double boxHeight = 35.0;
 
   List<Tile> bones = [
     Tile('0-0', 0, 0, 0),
@@ -919,7 +919,7 @@ class _DominoFormState extends State<DominoForm> {
               const Color.fromRGBO(14, 110, 140, 0.5333333333333333)),
       body: Column(children: [
         const Divider(
-          height: 20,
+          height: 10,
           thickness: 0,
           indent: 5,
           endIndent: 5,
@@ -1088,7 +1088,7 @@ class _DominoFormState extends State<DominoForm> {
         ),
         const Divider(
           color: Colors.red,
-          height: 20,
+          height: 10,
           thickness: 2,
           indent: 20,
           endIndent: 20,
