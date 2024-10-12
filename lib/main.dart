@@ -10,10 +10,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Domino Assistant',
-      home: DominoForm(),
+      theme: ThemeData(
+          scaffoldBackgroundColor: const Color.fromRGBO(
+              144, 224, 238, 0.22745098039215686) // Set background color here
+          ),
+      home: const DominoForm(),
     );
   }
 }
@@ -38,7 +42,7 @@ class _DominoFormState extends State<DominoForm> {
   double iconHeight = 60.0;
   double iconWidth = 35.0;
   double boxWidth = 40.0;
-  double boxHeight = 30.0;
+  double boxHeight = 40.0;
 
   List<Tile> bones = [
     Tile('0-0', 0, 0, 0),
@@ -117,26 +121,41 @@ class _DominoFormState extends State<DominoForm> {
     Tile('5-5', 5, 5, 10),
     Tile('6-6', 6, 6, 12),
     Tile('7-7', 7, 7, 14),
+    Tile('8-8', 8, 8, 16),
     Tile('9-9', 9, 9, 18),
-    Tile('8-8', 8, 8, 16)
   ];
 
-  Tile? upper, lower, left, center, right;
+  Tile? north, south, west, center, east;
 
   Tile result = Tile('', 0, 0, 0);
   int maxScore = 0;
   String matchString = "";
   List<Tile> matchList = [];
-
   List<Tile> tiles = [];
+  int topLength = 0, bottomLength = 0;
+  bool _visibleResults = false;
 
   void _addPile(Tile tile) {
     tiles.add(tile);
+    if (tiles.length <= 11) {
+      topLength = tiles.length;
+      bottomLength = 0;
+    } else {
+      topLength = 11;
+      bottomLength = tiles.length - 11;
+    }
     setState(() {});
   }
 
   void _deletePile(Tile tile) {
     tiles.remove(tile);
+    if (tiles.length <= 11) {
+      topLength = tiles.length;
+      bottomLength = 0;
+    } else {
+      topLength = 11;
+      bottomLength = tiles.length - 11;
+    }
     setState(() {});
   }
 
@@ -147,7 +166,7 @@ class _DominoFormState extends State<DominoForm> {
     matchList = [];
 
     if (center != null) {
-      if (left == null && right == null && upper == null && lower == null) {
+      if (west == null && east == null && north == null && south == null) {
         // center
 
         for (int t = 0; t < tiles.length; t++) {
@@ -163,27 +182,26 @@ class _DominoFormState extends State<DominoForm> {
             result = tiles[t];
           }
         }
-      } else if (left == null &&
-          right == null &&
-          upper != null &&
-          lower == null) {
-        // center + upper
-
+      } else if (west != null &&
+          east == null &&
+          north == null &&
+          south == null) {
+        // center + west
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
             matchList.add(tiles[t]);
-            testScore = upper!.x + tiles[t].y;
+            testScore = west!.x + tiles[t].y;
           } else if (tiles[t].y == center?.x) {
             matchList.add(tiles[t]);
-            testScore = upper!.x + tiles[t].x;
-          } else if (tiles[t].x == upper?.x) {
+            testScore = west!.x + tiles[t].x;
+          } else if (tiles[t].x == west?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
               testScore = tiles[t].s + center!.s;
             } else {
               testScore = tiles[t].y + center!.s;
             }
-          } else if (tiles[t].y == upper?.x) {
+          } else if (tiles[t].y == west?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
               testScore = tiles[t].s + center!.s;
@@ -196,27 +214,26 @@ class _DominoFormState extends State<DominoForm> {
             result = tiles[t];
           }
         }
-      } else if (left == null &&
-          right == null &&
-          upper == null &&
-          lower != null) {
-        // center + lower
-
+      } else if (west == null &&
+          east != null &&
+          north == null &&
+          south == null) {
+        // center + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
             matchList.add(tiles[t]);
-            testScore = lower!.x + tiles[t].y;
+            testScore = east!.x + tiles[t].y;
           } else if (tiles[t].y == center?.x) {
             matchList.add(tiles[t]);
-            testScore = lower!.x + tiles[t].x;
-          } else if (tiles[t].x == lower?.x) {
+            testScore = east!.x + tiles[t].x;
+          } else if (tiles[t].x == east?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
               testScore = tiles[t].s + center!.s;
             } else {
               testScore = tiles[t].y + center!.s;
             }
-          } else if (tiles[t].y == lower?.x) {
+          } else if (tiles[t].y == east?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
               testScore = tiles[t].s + center!.s;
@@ -229,45 +246,31 @@ class _DominoFormState extends State<DominoForm> {
             result = tiles[t];
           }
         }
-      } else if (left == null &&
-          right == null &&
-          upper != null &&
-          lower != null) {
-        // center + upper + lower
+      } else if (west == null &&
+          east == null &&
+          north != null &&
+          south == null) {
+        // center + north
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
             matchList.add(tiles[t]);
-            testScore = upper!.s + lower!.s + tiles[t].y;
+            testScore = north!.x + tiles[t].y;
           } else if (tiles[t].y == center?.x) {
             matchList.add(tiles[t]);
-            testScore = upper!.s + lower!.s + tiles[t].x;
-          } else if (tiles[t].x == upper?.x) {
+            testScore = north!.x + tiles[t].x;
+          } else if (tiles[t].x == north?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + lower!.s;
+              testScore = tiles[t].s + center!.s;
             } else {
-              testScore = tiles[t].y + lower!.s;
+              testScore = tiles[t].y + center!.s;
             }
-          } else if (tiles[t].y == upper?.x) {
+          } else if (tiles[t].y == north?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + lower!.s;
+              testScore = tiles[t].s + center!.s;
             } else {
-              testScore = tiles[t].x + lower!.s;
-            }
-          } else if (tiles[t].x == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s;
-            } else {
-              testScore = tiles[t].y + upper!.s;
-            }
-          } else if (tiles[t].y == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s;
-            } else {
-              testScore = tiles[t].x + upper!.s;
+              testScore = tiles[t].x + center!.s;
             }
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
@@ -275,290 +278,32 @@ class _DominoFormState extends State<DominoForm> {
             result = tiles[t];
           }
         }
-      } else if (left != null &&
-          right != null &&
-          upper == null &&
-          lower == null) {
-        // center + left + right
-        for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = left!.s + right!.s + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = left!.s + right!.s + tiles[t].x;
-          } else if (tiles[t].x == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s;
-            } else {
-              testScore = tiles[t].y + right!.s;
-            }
-          } else if (tiles[t].y == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s;
-            } else {
-              testScore = tiles[t].x + right!.s;
-            }
-          } else if (tiles[t].x == right?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s;
-            } else {
-              testScore = tiles[t].y + left!.s;
-            }
-          } else if (tiles[t].y == right?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s;
-            } else {
-              testScore = tiles[t].x + left!.s;
-            }
-          }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
-        }
-      } else if (left != null &&
-          right == null &&
-          upper != null &&
-          lower == null) {
-        // center + upper + left
-        for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = left!.s + upper!.s + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = left!.s + upper!.s + tiles[t].x;
-          } else if (tiles[t].x == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s;
-            } else {
-              testScore = tiles[t].y + upper!.s;
-            }
-          } else if (tiles[t].y == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s;
-            } else {
-              testScore = tiles[t].x + upper!.s;
-            }
-          } else if (tiles[t].x == upper?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s;
-            } else {
-              testScore = tiles[t].y + left!.s;
-            }
-          } else if (tiles[t].y == upper?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s;
-            } else {
-              testScore = tiles[t].x + left!.s;
-            }
-          }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
-        }
-      } else if (left == null &&
-          right != null &&
-          upper != null &&
-          lower == null) {
-        // center + upper + right
-        for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = right!.s + upper!.s + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = right!.s + upper!.s + tiles[t].x;
-          } else if (tiles[t].x == right?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s;
-            } else {
-              testScore = tiles[t].y + upper!.s;
-            }
-          } else if (tiles[t].y == right?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s;
-            } else {
-              testScore = tiles[t].x + upper!.s;
-            }
-          } else if (tiles[t].x == upper?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s;
-            } else {
-              testScore = tiles[t].y + right!.s;
-            }
-          } else if (tiles[t].y == upper?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s;
-            } else {
-              testScore = tiles[t].x + right!.s;
-            }
-          }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
-        }
-      } else if (left != null &&
-          right == null &&
-          upper == null &&
-          lower != null) {
-        // center + lower + left
-        for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = left!.s + lower!.s + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = left!.s + lower!.s + tiles[t].x;
-          } else if (tiles[t].x == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + lower!.s;
-            } else {
-              testScore = tiles[t].y + lower!.s;
-            }
-          } else if (tiles[t].y == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + lower!.s;
-            } else {
-              testScore = tiles[t].x + lower!.s;
-            }
-          } else if (tiles[t].x == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s;
-            } else {
-              testScore = tiles[t].y + left!.s;
-            }
-          } else if (tiles[t].y == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s;
-            } else {
-              testScore = tiles[t].x + left!.s;
-            }
-          }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
-        }
-      } else if (left == null &&
-          right != null &&
-          upper == null &&
-          lower != null) {
-        // center + lower + right
-        for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = right!.s + lower!.s + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = right!.s + lower!.s + tiles[t].x;
-          } else if (tiles[t].x == right?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + lower!.s;
-            } else {
-              testScore = tiles[t].y + lower!.s;
-            }
-          } else if (tiles[t].y == right?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + lower!.s;
-            } else {
-              testScore = tiles[t].x + lower!.s;
-            }
-          } else if (tiles[t].x == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s;
-            } else {
-              testScore = tiles[t].y + right!.s;
-            }
-          } else if (tiles[t].y == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s;
-            } else {
-              testScore = tiles[t].x + right!.s;
-            }
-          }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
-        }
-      } else if (left != null &&
-          right == null &&
-          upper != null &&
-          lower != null) {
-        // center + upper + lower + left
+      } else if (west == null &&
+          east == null &&
+          north == null &&
+          south != null) {
+        // center + south
 
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
             matchList.add(tiles[t]);
-            testScore = tiles[t].y + upper!.s + left!.s + lower!.s;
+            testScore = south!.x + tiles[t].y;
           } else if (tiles[t].y == center?.x) {
             matchList.add(tiles[t]);
-            testScore = tiles[t].x + upper!.s + left!.s + lower!.s;
-          } else if (tiles[t].x == upper?.x) {
+            testScore = south!.x + tiles[t].x;
+          } else if (tiles[t].x == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s + lower!.s;
+              testScore = tiles[t].s + center!.s;
             } else {
-              testScore = tiles[t].y + left!.s + lower!.s;
+              testScore = tiles[t].y + center!.s;
             }
-          } else if (tiles[t].y == upper?.x) {
+          } else if (tiles[t].y == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s + lower!.s;
+              testScore = tiles[t].s + center!.s;
             } else {
-              testScore = tiles[t].x + left!.s + lower!.s;
-            }
-          } else if (tiles[t].x == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + lower!.s;
-            } else {
-              testScore = tiles[t].y + upper!.s + lower!.s;
-            }
-          } else if (tiles[t].y == left?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + lower!.s;
-            } else {
-              testScore = tiles[t].x + upper!.s + lower!.s;
-            }
-          } else if (tiles[t].x == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + left!.s;
-            } else {
-              testScore = tiles[t].y + upper!.s + left!.s;
-            }
-          } else if (tiles[t].y == lower?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + left!.s;
-            } else {
-              testScore = tiles[t].x + upper!.s + left!.s;
+              testScore = tiles[t].x + center!.s;
             }
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
@@ -566,60 +311,336 @@ class _DominoFormState extends State<DominoForm> {
             result = tiles[t];
           }
         }
-      } else if (left == null &&
-          right != null &&
-          upper != null &&
-          lower != null) {
-        // center + upper + lower + right
+      } else if (west == null &&
+          east == null &&
+          north != null &&
+          south != null) {
+        // center + north + south
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = north!.s + south!.s + tiles[t].y;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = north!.s + south!.s + tiles[t].x;
+          } else if (tiles[t].x == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + south!.s;
+            } else {
+              testScore = tiles[t].y + south!.s;
+            }
+          } else if (tiles[t].y == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + south!.s;
+            } else {
+              testScore = tiles[t].x + south!.s;
+            }
+          } else if (tiles[t].x == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s;
+            } else {
+              testScore = tiles[t].y + north!.s;
+            }
+          } else if (tiles[t].y == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s;
+            } else {
+              testScore = tiles[t].x + north!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west != null &&
+          east != null &&
+          north == null &&
+          south == null) {
+        // center + west + east
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = west!.s + east!.s + tiles[t].y;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = west!.s + east!.s + tiles[t].x;
+          } else if (tiles[t].x == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s;
+            } else {
+              testScore = tiles[t].y + east!.s;
+            }
+          } else if (tiles[t].y == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s;
+            } else {
+              testScore = tiles[t].x + east!.s;
+            }
+          } else if (tiles[t].x == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s;
+            } else {
+              testScore = tiles[t].y + west!.s;
+            }
+          } else if (tiles[t].y == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s;
+            } else {
+              testScore = tiles[t].x + west!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west != null &&
+          east == null &&
+          north != null &&
+          south == null) {
+        // center + north + west
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = west!.s + north!.s + tiles[t].y;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = west!.s + north!.s + tiles[t].x;
+          } else if (tiles[t].x == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s;
+            } else {
+              testScore = tiles[t].y + north!.s;
+            }
+          } else if (tiles[t].y == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s;
+            } else {
+              testScore = tiles[t].x + north!.s;
+            }
+          } else if (tiles[t].x == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s;
+            } else {
+              testScore = tiles[t].y + west!.s;
+            }
+          } else if (tiles[t].y == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s;
+            } else {
+              testScore = tiles[t].x + west!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west == null &&
+          east != null &&
+          north != null &&
+          south == null) {
+        // center + north + east
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = east!.s + north!.s + tiles[t].y;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = east!.s + north!.s + tiles[t].x;
+          } else if (tiles[t].x == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s;
+            } else {
+              testScore = tiles[t].y + north!.s;
+            }
+          } else if (tiles[t].y == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s;
+            } else {
+              testScore = tiles[t].x + north!.s;
+            }
+          } else if (tiles[t].x == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s;
+            } else {
+              testScore = tiles[t].y + east!.s;
+            }
+          } else if (tiles[t].y == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s;
+            } else {
+              testScore = tiles[t].x + east!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west != null &&
+          east == null &&
+          north == null &&
+          south != null) {
+        // center + south + west
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = west!.s + south!.s + tiles[t].y;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = west!.s + south!.s + tiles[t].x;
+          } else if (tiles[t].x == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + south!.s;
+            } else {
+              testScore = tiles[t].y + south!.s;
+            }
+          } else if (tiles[t].y == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + south!.s;
+            } else {
+              testScore = tiles[t].x + south!.s;
+            }
+          } else if (tiles[t].x == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s;
+            } else {
+              testScore = tiles[t].y + west!.s;
+            }
+          } else if (tiles[t].y == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s;
+            } else {
+              testScore = tiles[t].x + west!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west == null &&
+          east != null &&
+          north == null &&
+          south != null) {
+        // center + south + east
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = east!.s + south!.s + tiles[t].y;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = east!.s + south!.s + tiles[t].x;
+          } else if (tiles[t].x == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + south!.s;
+            } else {
+              testScore = tiles[t].y + south!.s;
+            }
+          } else if (tiles[t].y == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + south!.s;
+            } else {
+              testScore = tiles[t].x + south!.s;
+            }
+          } else if (tiles[t].x == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s;
+            } else {
+              testScore = tiles[t].y + east!.s;
+            }
+          } else if (tiles[t].y == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s;
+            } else {
+              testScore = tiles[t].x + east!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west != null &&
+          east == null &&
+          north != null &&
+          south != null) {
+        // center + north + south + west
 
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
             matchList.add(tiles[t]);
-            testScore = tiles[t].y + upper!.s + right!.s + lower!.s;
+            testScore = tiles[t].y + north!.s + west!.s + south!.s;
           } else if (tiles[t].y == center?.x) {
             matchList.add(tiles[t]);
-            testScore = tiles[t].x + upper!.s + right!.s + lower!.s;
-          } else if (tiles[t].x == upper?.x) {
+            testScore = tiles[t].x + north!.s + west!.s + south!.s;
+          } else if (tiles[t].x == north?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s + lower!.s;
+              testScore = tiles[t].s + west!.s + south!.s;
             } else {
-              testScore = tiles[t].y + right!.s + lower!.s;
+              testScore = tiles[t].y + west!.s + south!.s;
             }
-          } else if (tiles[t].y == upper?.x) {
+          } else if (tiles[t].y == north?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + right!.s + lower!.s;
+              testScore = tiles[t].s + west!.s + south!.s;
             } else {
-              testScore = tiles[t].x + right!.s + lower!.s;
+              testScore = tiles[t].x + west!.s + south!.s;
             }
-          } else if (tiles[t].x == right?.x) {
+          } else if (tiles[t].x == west?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + lower!.s;
+              testScore = tiles[t].s + north!.s + south!.s;
             } else {
-              testScore = tiles[t].y + upper!.s + lower!.s;
+              testScore = tiles[t].y + north!.s + south!.s;
             }
-          } else if (tiles[t].y == right?.x) {
+          } else if (tiles[t].y == west?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + lower!.s;
+              testScore = tiles[t].s + north!.s + south!.s;
             } else {
-              testScore = tiles[t].x + upper!.s + lower!.s;
+              testScore = tiles[t].x + north!.s + south!.s;
             }
-          } else if (tiles[t].x == lower?.x) {
+          } else if (tiles[t].x == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + right!.s;
+              testScore = tiles[t].s + north!.s + west!.s;
             } else {
-              testScore = tiles[t].y + upper!.s + right!.s;
+              testScore = tiles[t].y + north!.s + west!.s;
             }
-          } else if (tiles[t].y == lower?.x) {
+          } else if (tiles[t].y == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + right!.s;
+              testScore = tiles[t].s + north!.s + west!.s;
             } else {
-              testScore = tiles[t].x + upper!.s + right!.s;
+              testScore = tiles[t].x + north!.s + west!.s;
             }
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
@@ -627,67 +648,247 @@ class _DominoFormState extends State<DominoForm> {
             result = tiles[t];
           }
         }
-      } else if (left != null &&
-          right != null &&
-          upper != null &&
-          lower != null) {
-        // center + upper + lower + left + right
+      } else if (west == null &&
+          east != null &&
+          north != null &&
+          south != null) {
+        // center + north + south + east
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == left?.x) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = tiles[t].y + north!.s + east!.s + south!.s;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = tiles[t].x + north!.s + east!.s + south!.s;
+          } else if (tiles[t].x == north?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + right!.s + lower!.s;
+              testScore = tiles[t].s + east!.s + south!.s;
             } else {
-              testScore = tiles[t].y + upper!.s + right!.s + lower!.s;
+              testScore = tiles[t].y + east!.s + south!.s;
             }
-          } else if (tiles[t].y == left?.x) {
+          } else if (tiles[t].y == north?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + right!.s + lower!.s;
+              testScore = tiles[t].s + east!.s + south!.s;
             } else {
-              testScore = tiles[t].x + upper!.s + right!.s + lower!.s;
+              testScore = tiles[t].x + east!.s + south!.s;
             }
-          } else if (tiles[t].x == upper?.x) {
+          } else if (tiles[t].x == east?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s + right!.s + lower!.s;
+              testScore = tiles[t].s + north!.s + south!.s;
             } else {
-              testScore = tiles[t].y + left!.s + right!.s + lower!.s;
+              testScore = tiles[t].y + north!.s + south!.s;
             }
-          } else if (tiles[t].y == upper?.x) {
+          } else if (tiles[t].y == east?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + left!.s + right!.s + lower!.s;
+              testScore = tiles[t].s + north!.s + south!.s;
             } else {
-              testScore = tiles[t].x + left!.s + right!.s + lower!.s;
+              testScore = tiles[t].x + north!.s + south!.s;
             }
-          } else if (tiles[t].x == right?.x) {
+          } else if (tiles[t].x == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + left!.s + lower!.s;
+              testScore = tiles[t].s + north!.s + east!.s;
             } else {
-              testScore = tiles[t].y + upper!.s + left!.s + lower!.s;
+              testScore = tiles[t].y + north!.s + east!.s;
             }
-          } else if (tiles[t].y == right?.x) {
+          } else if (tiles[t].y == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + left!.s + lower!.s;
+              testScore = tiles[t].s + north!.s + east!.s;
             } else {
-              testScore = tiles[t].x + upper!.s + left!.s + lower!.s;
+              testScore = tiles[t].x + north!.s + east!.s;
             }
-          } else if (tiles[t].x == lower?.x) {
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west != null &&
+          east != null &&
+          north == null &&
+          south != null) {
+        // center + west + south + east
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = tiles[t].y + west!.s + east!.s + south!.s;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = tiles[t].x + west!.s + east!.s + south!.s;
+          } else if (tiles[t].x == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + right!.s + left!.s;
+              testScore = tiles[t].s + east!.s + west!.s;
             } else {
-              testScore = tiles[t].y + upper!.s + right!.s + left!.s;
+              testScore = tiles[t].y + east!.s + west!.s;
             }
-          } else if (tiles[t].y == lower?.x) {
+          } else if (tiles[t].y == south?.x) {
             matchList.add(tiles[t]);
             if (tiles[t].s > 0) {
-              testScore = tiles[t].s + upper!.s + right!.s + left!.s;
+              testScore = tiles[t].s + east!.s + west!.s;
             } else {
-              testScore = tiles[t].x + upper!.s + right!.s + left!.s;
+              testScore = tiles[t].x + east!.s + west!.s;
+            }
+          } else if (tiles[t].x == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + south!.s;
+            } else {
+              testScore = tiles[t].y + west!.s + south!.s;
+            }
+          } else if (tiles[t].y == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + south!.s;
+            } else {
+              testScore = tiles[t].x + west!.s + south!.s;
+            }
+          } else if (tiles[t].x == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + south!.s + east!.s;
+            } else {
+              testScore = tiles[t].y + south!.s + east!.s;
+            }
+          } else if (tiles[t].y == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + south!.s;
+            } else {
+              testScore = tiles[t].x + west!.s + south!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west != null &&
+          east != null &&
+          north != null &&
+          south == null) {
+        // center + west + north + east
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = tiles[t].y + west!.s + east!.s + north!.s;
+          } else if (tiles[t].y == center?.x) {
+            matchList.add(tiles[t]);
+            testScore = tiles[t].x + west!.s + east!.s + north!.s;
+          } else if (tiles[t].x == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s + west!.s;
+            } else {
+              testScore = tiles[t].y + east!.s + west!.s;
+            }
+          } else if (tiles[t].y == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s + west!.s;
+            } else {
+              testScore = tiles[t].x + east!.s + west!.s;
+            }
+          } else if (tiles[t].x == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + east!.s + north!.s;
+            } else {
+              testScore = tiles[t].y + east!.s + north!.s;
+            }
+          } else if (tiles[t].y == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + north!.s;
+            } else {
+              testScore = tiles[t].x + west!.s + north!.s;
+            }
+          } else if (tiles[t].x == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + north!.s;
+            } else {
+              testScore = tiles[t].y + west!.s + north!.s;
+            }
+          } else if (tiles[t].y == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + north!.s;
+            } else {
+              testScore = tiles[t].x + west!.s + north!.s;
+            }
+          }
+          if (testScore % 5 == 0 && testScore > maxScore) {
+            maxScore = testScore;
+            result = tiles[t];
+          }
+        }
+      } else if (west != null &&
+          east != null &&
+          north != null &&
+          south != null) {
+        // center + north + south + west + east
+        for (int t = 0; t < tiles.length; t++) {
+          if (tiles[t].x == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s + east!.s + south!.s;
+            } else {
+              testScore = tiles[t].y + north!.s + east!.s + south!.s;
+            }
+          } else if (tiles[t].y == west?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s + east!.s + south!.s;
+            } else {
+              testScore = tiles[t].x + north!.s + east!.s + south!.s;
+            }
+          } else if (tiles[t].x == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + east!.s + south!.s;
+            } else {
+              testScore = tiles[t].y + west!.s + east!.s + south!.s;
+            }
+          } else if (tiles[t].y == north?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + west!.s + east!.s + south!.s;
+            } else {
+              testScore = tiles[t].x + west!.s + east!.s + south!.s;
+            }
+          } else if (tiles[t].x == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s + west!.s + south!.s;
+            } else {
+              testScore = tiles[t].y + north!.s + west!.s + south!.s;
+            }
+          } else if (tiles[t].y == east?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s + west!.s + south!.s;
+            } else {
+              testScore = tiles[t].x + north!.s + west!.s + south!.s;
+            }
+          } else if (tiles[t].x == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s + east!.s + west!.s;
+            } else {
+              testScore = tiles[t].y + north!.s + east!.s + west!.s;
+            }
+          } else if (tiles[t].y == south?.x) {
+            matchList.add(tiles[t]);
+            if (tiles[t].s > 0) {
+              testScore = tiles[t].s + north!.s + east!.s + west!.s;
+            } else {
+              testScore = tiles[t].x + north!.s + east!.s + west!.s;
             }
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
@@ -703,6 +904,7 @@ class _DominoFormState extends State<DominoForm> {
         matchString += '${k.name} ';
       }
     }
+    _visibleResults = true;
     setState(() {});
   }
 
@@ -710,305 +912,379 @@ class _DominoFormState extends State<DominoForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Domino Solver'),
-        centerTitle: true,
-        backgroundColor: Colors.lightBlueAccent,
-      ),
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(11, (index) {
-              return Container(
+          title: const Text('DB\'r Domino Solver'),
+          foregroundColor: Colors.lightBlueAccent,
+          centerTitle: true,
+          backgroundColor:
+              const Color.fromRGBO(14, 110, 140, 0.5333333333333333)),
+      body: Column(children: [
+        const Divider(
+          height: 20,
+          thickness: 0,
+          indent: 5,
+          endIndent: 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(11, (index) {
+            return Container(
+              padding: const EdgeInsets.all(0.0),
+              width: iconWidth,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: Image.asset("assets/${bones[index].name}.png",
+                    height: iconHeight, width: iconWidth),
+                onPressed: () async {
+                  _addPile(bones[index]);
+                },
+              ),
+            );
+          }),
+        ),
+        const Divider(
+          color: Colors.blue,
+          height: 5,
+          thickness: 2,
+          indent: 5,
+          endIndent: 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(11, (index) {
+            return Container(
+              padding: const EdgeInsets.all(0.0),
+              width: iconWidth,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: Image.asset("assets/${bones[index + 11].name}.png",
+                    height: iconHeight, width: iconWidth),
+                onPressed: () async {
+                  _addPile(bones[index + 11]);
+                },
+              ),
+            );
+          }),
+        ),
+        const Divider(
+          color: Colors.blue,
+          height: 5,
+          thickness: 2,
+          indent: 5,
+          endIndent: 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(11, (index) {
+            return Container(
+              padding: const EdgeInsets.all(0.0),
+              width: iconWidth,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: Image.asset("assets/${bones[index + 22].name}.png",
+                    height: iconHeight, width: iconWidth),
+                onPressed: () async {
+                  _addPile(bones[index + 22]);
+                },
+              ),
+            );
+          }),
+        ),
+        const Divider(
+          color: Colors.blue,
+          height: 5,
+          thickness: 2,
+          indent: 5,
+          endIndent: 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(11, (index) {
+            return Container(
+              padding: const EdgeInsets.all(0.0),
+              width: iconWidth,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: Image.asset("assets/${bones[index + 33].name}.png",
+                    height: iconHeight, width: iconWidth),
+                onPressed: () async {
+                  _addPile(bones[index + 33]);
+                },
+              ),
+            );
+          }),
+        ),
+        const Divider(
+          color: Colors.blue,
+          height: 5,
+          thickness: 2,
+          indent: 5,
+          endIndent: 5,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(11, (index) {
+            return Container(
+              padding: const EdgeInsets.all(0.0),
+              width: iconWidth,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: Image.asset("assets/${bones[index + 44].name}.png",
+                    height: iconHeight, width: iconWidth),
+                onPressed: () async {
+                  _addPile(bones[index + 44]);
+                },
+              ),
+            );
+          }),
+        ),
+        const Divider(
+          color: Colors.red,
+          height: 10,
+          thickness: 2,
+          indent: 20,
+          endIndent: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(topLength, (inx) {
+            return Container(
                 padding: const EdgeInsets.all(0.0),
                 width: iconWidth,
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  icon: Image.asset("assets/${bones[index].name}.png",
+                  icon: Image.asset("assets/${tiles[inx].name}.png",
                       height: iconHeight, width: iconWidth),
-                  onPressed: () async {
-                    _addPile(bones[index]);
+                  onPressed: () {
+                    _deletePile(tiles[inx]);
                   },
-                ),
-              );
-            }),
-          ),
-          const Divider(
-            color: Colors.blue,
-            height: 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(11, (index) {
-              return Container(
+                ));
+          }),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(bottomLength, (inx) {
+            return Container(
                 padding: const EdgeInsets.all(0.0),
                 width: iconWidth,
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  icon: Image.asset("assets/${bones[index + 11].name}.png",
+                  icon: Image.asset("assets/${tiles[inx + 11].name}.png",
                       height: iconHeight, width: iconWidth),
-                  onPressed: () async {
-                    _addPile(bones[index + 11]);
+                  onPressed: () {
+                    _deletePile(tiles[inx]);
+                  },
+                ));
+          }),
+        ),
+        TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.blueAccent,
+          ),
+          onPressed: () async {
+            _solve();
+          },
+          child: const Text('Solve'),
+        ),
+        const Divider(
+          color: Colors.red,
+          height: 20,
+          thickness: 2,
+          indent: 20,
+          endIndent: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: boxWidth,
+              height: boxHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<Tile>(
+                  value: north,
+                  iconSize: 0,
+                  isExpanded: true,
+                  style: const TextStyle(color: Colors.yellow),
+                  dropdownColor: Colors.blue,
+                  items: table.map((Tile val) {
+                    return DropdownMenuItem<Tile>(
+                      value: val,
+                      child: Center(child: Text(val.name)),
+                    );
+                  }).toList(),
+                  onChanged: (Tile? newValue) {
+                    setState(() {
+                      north = newValue!;
+                    });
                   },
                 ),
-              );
-            }),
-          ),
-          const Divider(
-            color: Colors.blue,
-            height: 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(11, (index) {
-              return Container(
-                padding: const EdgeInsets.all(0.0),
-                width: iconWidth,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: Image.asset("assets/${bones[index + 22].name}.png",
-                      height: iconHeight, width: iconWidth),
-                  onPressed: () async {
-                    _addPile(bones[index + 22]);
-                  },
-                ),
-              );
-            }),
-          ),
-          const Divider(
-            color: Colors.blue,
-            height: 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(11, (index) {
-              return Container(
-                padding: const EdgeInsets.all(0.0),
-                width: iconWidth,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: Image.asset("assets/${bones[index + 33].name}.png",
-                      height: iconHeight, width: iconWidth),
-                  onPressed: () async {
-                    _addPile(bones[index + 33]);
-                  },
-                ),
-              );
-            }),
-          ),
-          const Divider(
-            color: Colors.blue,
-            height: 5,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(11, (index) {
-              return Container(
-                padding: const EdgeInsets.all(0.0),
-                width: iconWidth,
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: Image.asset("assets/${bones[index + 44].name}.png",
-                      height: iconHeight, width: iconWidth),
-                  onPressed: () async {
-                    _addPile(bones[index + 44]);
-                  },
-                ),
-              );
-            }),
-          ),
-          const Divider(
-            color: Colors.red,
-            height: 20,
-          ),
-          TextButton(
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white,
-              backgroundColor: Colors.blueAccent,
+              ),
+            )
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: boxWidth,
+              height: boxHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<Tile>(
+                    value: west,
+                    iconSize: 0,
+                    isExpanded: true,
+                    style: const TextStyle(color: Colors.yellow),
+                    dropdownColor: Colors.blue,
+                    items: table.map((Tile val) {
+                      return DropdownMenuItem<Tile>(
+                        value: val,
+                        child: Center(child: Text(val.name)),
+                      );
+                    }).toList(),
+                    onChanged: (Tile? newValue) {
+                      setState(() {
+                        west = newValue!;
+                      });
+                    }),
+              ),
             ),
-            onPressed: () async {
-              _solve();
-            },
-            child: const Text('Solve'),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(tiles.length, (inx) {
-              return Container(
-                  padding: const EdgeInsets.all(0.0),
-                  width: iconWidth,
-                  child: IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Image.asset("assets/${tiles[inx].name}.png",
-                        height: iconHeight, width: iconWidth),
-                    onPressed: () {
-                      _deletePile(tiles[inx]);
-                    },
-                  ));
-            }),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: boxWidth,
-                height: boxHeight,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<Tile>(
-                      value: upper,
-                      iconSize: 0,
-                      isExpanded: true,
-                      items: table.map((Tile val) {
-                        return DropdownMenuItem<Tile>(
-                          value: val,
-                          child: Center(child: Text(val.name)),
-                        );
-                      }).toList(),
-                      onChanged: (Tile? newValue) {
-                        setState(() {
-                          upper = newValue!;
-                        });
-                      }),
-                ),
-              )
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: boxWidth,
-                height: boxHeight,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<Tile>(
-                      value: left,
-                      iconSize: 0,
-                      isExpanded: true,
-                      items: table.map((Tile val) {
-                        return DropdownMenuItem<Tile>(
-                          value: val,
-                          child: Center(child: Text(val.name)),
-                        );
-                      }).toList(),
-                      onChanged: (Tile? newValue) {
-                        setState(() {
-                          left = newValue!;
-                        });
-                      }),
-                ),
+            Container(
+              width: boxWidth,
+              height: boxHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
               ),
-              Container(
-                width: 2 * boxWidth,
-                height: boxHeight,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<Tile>(
-                      value: center,
-                      iconSize: 0,
-                      isExpanded: true,
-                      items: table.map((Tile val) {
-                        return DropdownMenuItem<Tile>(
-                          value: val,
-                          child: Center(child: Text(val.name)),
-                        );
-                      }).toList(),
-                      onChanged: (Tile? newValue) {
-                        setState(() {
-                          center = newValue!;
-                        });
-                      }),
-                ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<Tile>(
+                    value: center,
+                    iconSize: 0,
+                    isExpanded: true,
+                    style: const TextStyle(color: Colors.yellow),
+                    dropdownColor: Colors.blue,
+                    items: table.map((Tile val) {
+                      return DropdownMenuItem<Tile>(
+                        value: val,
+                        child: Center(child: Text(val.name)),
+                      );
+                    }).toList(),
+                    onChanged: (Tile? newValue) {
+                      setState(() {
+                        center = newValue!;
+                      });
+                    }),
               ),
-              Container(
-                width: boxWidth,
-                height: boxHeight,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<Tile>(
-                      value: right,
-                      iconSize: 0,
-                      isExpanded: true,
-                      items: table.map((Tile val) {
-                        return DropdownMenuItem<Tile>(
-                          value: val,
-                          child: Center(child: Text(val.name)),
-                        );
-                      }).toList(),
-                      onChanged: (Tile? newValue) {
-                        setState(() {
-                          right = newValue!;
-                        });
-                      }),
-                ),
-              )
+            ),
+            Container(
+              width: boxWidth,
+              height: boxHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<Tile>(
+                    value: east,
+                    iconSize: 0,
+                    isExpanded: true,
+                    style: const TextStyle(color: Colors.yellow),
+                    dropdownColor: Colors.blue,
+                    items: table.map((Tile val) {
+                      return DropdownMenuItem<Tile>(
+                        value: val,
+                        child: Center(child: Text(val.name)),
+                      );
+                    }).toList(),
+                    onChanged: (Tile? newValue) {
+                      setState(() {
+                        east = newValue!;
+                      });
+                    }),
+              ),
+            )
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: boxWidth,
+              height: boxHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<Tile>(
+                    value: south,
+                    iconSize: 0,
+                    isExpanded: true,
+                    style: const TextStyle(color: Colors.yellow),
+                    dropdownColor: Colors.blue,
+                    items: table.map((Tile val) {
+                      return DropdownMenuItem<Tile>(
+                        value: val,
+                        child: Center(child: Text(val.name)),
+                      );
+                    }).toList(),
+                    onChanged: (Tile? newValue) {
+                      setState(() {
+                        south = newValue!;
+                      });
+                    }),
+              ),
+            )
+          ],
+        ),
+        Visibility(
+          visible: _visibleResults,
+          child: Column(
+            children: [
+              const Text(
+                style: TextStyle(fontSize: 20, color: Colors.green),
+                ' Matches ',
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(matchList.length, (index) {
+                  return Center(
+                    child: SizedBox(
+                        width: iconWidth,
+                        height: iconHeight,
+                        child: Image.asset(
+                            'assets/${matchList[index].name}.png',
+                            fit: BoxFit.cover)),
+                  );
+                }),
+              ),
+              Text(
+                style: const TextStyle(fontSize: 20, color: Colors.green),
+                ' Score $maxScore ',
+              ),
+              Center(
+                child: result.name != ''
+                    ? SizedBox(
+                        width: iconWidth,
+                        height: iconHeight,
+                        child: Image.asset('assets/${result.name}.png',
+                            fit: BoxFit.cover))
+                    : const Text(
+                        style: TextStyle(fontSize: 20, color: Colors.green),
+                        ' No Scoring moves ',
+                      ),
+              ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                width: boxWidth,
-                height: boxHeight,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<Tile>(
-                      value: lower,
-                      iconSize: 0,
-                      isExpanded: true,
-                      items: table.map((Tile val) {
-                        return DropdownMenuItem<Tile>(
-                          value: val,
-                          child: Center(child: Text(val.name)),
-                        );
-                      }).toList(),
-                      onChanged: (Tile? newValue) {
-                        setState(() {
-                          lower = newValue!;
-                        });
-                      }),
-                ),
-              )
-            ],
-          ),
-          Text(
-            style: const TextStyle(fontSize: 20, color: Colors.green),
-            ' Matches $matchString ',
-          ),
-          Center(
-            child: result.name != ''
-                ? SizedBox(
-                    width: iconWidth,
-                    height: iconHeight,
-                    child: Image.asset('assets/${result.name}.png',
-                        fit: BoxFit.cover))
-                : const Text(
-                    style: TextStyle(fontSize: 20, color: Colors.green),
-                    ' No Score ',
-                  ),
-          ),
-          Text(
-            style: const TextStyle(fontSize: 20, color: Colors.green),
-            ' Score $maxScore ',
-          ),
-        ],
-      ),
+        ),
+      ]),
     );
   }
 }
