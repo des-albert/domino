@@ -4,18 +4,25 @@ void main() {
   runApp(const MyApp());
 }
 
+double width = 0;
+double height = 0;
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.sizeOf(context);
+    width = size.width;
+    height = size.height;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Domino Assistant',
       theme: ThemeData(
           scaffoldBackgroundColor: const Color.fromRGBO(
-              144, 224, 238, 0.22745098039215686) // Set background color here
+              144, 224, 238, 0.25) // Set background color here
           ),
       home: const DominoForm(),
     );
@@ -39,10 +46,12 @@ class DominoForm extends StatefulWidget {
 }
 
 class _DominoFormState extends State<DominoForm> {
-  double iconHeight = 50.0;
-  double iconWidth = 30.0;
-  double boxWidth = 40.0;
-  double boxHeight = 35.0;
+  double iconWidth = width / 12.0;
+  double iconHeight = width * 1.5 / 12.0;
+  double boxWidth = 50.0;
+  double boxHeight = 40.0;
+
+  int testScore = 0;
 
   List<Tile> bones = [
     Tile('0-0', 0, 0, 0),
@@ -159,8 +168,81 @@ class _DominoFormState extends State<DominoForm> {
     setState(() {});
   }
 
+  void _addEndX(int t, Tile? p) {
+    matchList.add(tiles[t]);
+    if (tiles[t].s > 0) {
+      testScore = tiles[t].s + p!.s;
+    } else {
+      testScore = tiles[t].x + p!.s;
+    }
+  }
+
+  void _addEndY(int t, Tile? p) {
+    matchList.add(tiles[t]);
+    if (tiles[t].s > 0) {
+      testScore = tiles[t].s + p!.s;
+    } else {
+      testScore = tiles[t].y + p!.s;
+    }
+  }
+
+  void _addEndX2(int t, Tile? p, Tile? q) {
+    matchList.add(tiles[t]);
+    if (tiles[t].s > 0) {
+      testScore = tiles[t].s + p!.s + q!.s;
+    } else {
+      testScore = tiles[t].x + p!.s + q!.s;
+    }
+  }
+
+  void _addEndY2(int t, Tile? p, Tile? q) {
+    matchList.add(tiles[t]);
+    if (tiles[t].s > 0) {
+      testScore = tiles[t].s + p!.s + q!.s;
+    } else {
+      testScore = tiles[t].y + p!.s + q!.s;
+    }
+  }
+
+  void _addX2(int t, Tile? p, Tile? q) {
+    matchList.add(tiles[t]);
+    testScore = tiles[t].x + p!.s + q!.s;
+  }
+
+  void _addY2(int t, Tile? p, Tile? q) {
+    matchList.add(tiles[t]);
+    testScore = tiles[t].y + p!.s + q!.s;
+  }
+
+  void _addX3(int t, Tile? p, Tile? q, Tile? r) {
+    matchList.add(tiles[t]);
+    testScore = tiles[t].x + p!.s + q!.s + r!.s;
+  }
+
+  void _addY3(int t, Tile? p, Tile? q, Tile? r) {
+    matchList.add(tiles[t]);
+    testScore = tiles[t].y + p!.s + q!.s + r!.s;
+  }
+
+  void _addEndX3(int t, Tile? p, Tile? q, Tile? r) {
+    matchList.add(tiles[t]);
+    if (tiles[t].s > 0) {
+      testScore = tiles[t].s + p!.s + q!.s + r!.s;
+    } else {
+      testScore = tiles[t].x + p!.s + q!.s + r!.s;
+    }
+  }
+
+  void _addEndY3(int t, Tile? p, Tile? q, Tile? r) {
+    matchList.add(tiles[t]);
+    if (tiles[t].s > 0) {
+      testScore = tiles[t].s + p!.s + q!.s + r!.s;
+    } else {
+      testScore = tiles[t].y + p!.s + q!.s + r!.s;
+    }
+  }
+
   void _solve() {
-    int testScore = 0;
     result = Tile('', 0, 0, 0);
     maxScore = 0;
     matchList = [];
@@ -172,10 +254,10 @@ class _DominoFormState extends State<DominoForm> {
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
             matchList.add(tiles[t]);
-            testScore = center!.s + tiles[t].y;
+            testScore = tiles[t].y + center!.s;
           } else if (tiles[t].y == center?.y) {
             matchList.add(tiles[t]);
-            testScore = center!.s + tiles[t].x;
+            testScore = tiles[t].x + center!.s;
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -190,24 +272,14 @@ class _DominoFormState extends State<DominoForm> {
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
             matchList.add(tiles[t]);
-            testScore = west!.x + tiles[t].y;
+            testScore = tiles[t].y + west!.x;
           } else if (tiles[t].y == center?.x) {
             matchList.add(tiles[t]);
-            testScore = west!.x + tiles[t].x;
+            testScore = tiles[t].x + west!.x;
           } else if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].y + center!.s;
-            }
+            _addEndY(t, center);
           } else if (tiles[t].y == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].x + center!.s;
-            }
+            _addEndX(t, center);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -227,19 +299,9 @@ class _DominoFormState extends State<DominoForm> {
             matchList.add(tiles[t]);
             testScore = east!.x + tiles[t].x;
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].y + center!.s;
-            }
+            _addEndY(t, center);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].x + center!.s;
-            }
+            _addEndX(t, center);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -259,19 +321,9 @@ class _DominoFormState extends State<DominoForm> {
             matchList.add(tiles[t]);
             testScore = north!.x + tiles[t].x;
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].y + center!.s;
-            }
+            _addEndY(t, center);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].x + center!.s;
-            }
+            _addEndX(t, center);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -292,19 +344,9 @@ class _DominoFormState extends State<DominoForm> {
             matchList.add(tiles[t]);
             testScore = south!.x + tiles[t].x;
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].y + center!.s;
-            }
+            _addEndY(t, center);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + center!.s;
-            } else {
-              testScore = tiles[t].x + center!.s;
-            }
+            _addEndX(t, center);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -318,39 +360,17 @@ class _DominoFormState extends State<DominoForm> {
         // center + north + south
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = north!.s + south!.s + tiles[t].y;
+            _addY2(t, north, south);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = north!.s + south!.s + tiles[t].x;
+            _addX2(t, north, south);
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + south!.s;
-            } else {
-              testScore = tiles[t].y + south!.s;
-            }
+            _addEndY(t, south);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + south!.s;
-            } else {
-              testScore = tiles[t].x + south!.s;
-            }
+            _addEndX(t, south);
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s;
-            } else {
-              testScore = tiles[t].y + north!.s;
-            }
+            _addEndY(t, north);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s;
-            } else {
-              testScore = tiles[t].x + north!.s;
-            }
+            _addEndX(t, north);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -364,39 +384,17 @@ class _DominoFormState extends State<DominoForm> {
         // center + west + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = west!.s + east!.s + tiles[t].y;
+            _addY2(t, west, east);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = west!.s + east!.s + tiles[t].x;
+            _addX2(t, west, east);
           } else if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s;
-            } else {
-              testScore = tiles[t].y + east!.s;
-            }
+            _addEndY(t, east);
           } else if (tiles[t].y == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s;
-            } else {
-              testScore = tiles[t].x + east!.s;
-            }
+            _addEndX(t, east);
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s;
-            } else {
-              testScore = tiles[t].y + west!.s;
-            }
+            _addEndY(t, west);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s;
-            } else {
-              testScore = tiles[t].x + west!.s;
-            }
+            _addEndX(t, west);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -410,39 +408,17 @@ class _DominoFormState extends State<DominoForm> {
         // center + north + west
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = west!.s + north!.s + tiles[t].y;
+            _addY2(t, west, north);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = west!.s + north!.s + tiles[t].x;
+            _addX2(t, west, north);
           } else if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s;
-            } else {
-              testScore = tiles[t].y + north!.s;
-            }
+            _addEndY(t, north);
           } else if (tiles[t].y == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s;
-            } else {
-              testScore = tiles[t].x + north!.s;
-            }
+            _addEndX(t, north);
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s;
-            } else {
-              testScore = tiles[t].y + west!.s;
-            }
+            _addEndY(t, west);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s;
-            } else {
-              testScore = tiles[t].x + west!.s;
-            }
+            _addEndX(t, west);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -456,39 +432,17 @@ class _DominoFormState extends State<DominoForm> {
         // center + north + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = east!.s + north!.s + tiles[t].y;
+            _addY2(t, east, north);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = east!.s + north!.s + tiles[t].x;
+            _addX2(t, east, north);
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s;
-            } else {
-              testScore = tiles[t].y + north!.s;
-            }
+            _addEndY(t, north);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s;
-            } else {
-              testScore = tiles[t].x + north!.s;
-            }
+            _addEndX(t, north);
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s;
-            } else {
-              testScore = tiles[t].y + east!.s;
-            }
+            _addEndY(t, east);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s;
-            } else {
-              testScore = tiles[t].x + east!.s;
-            }
+            _addEndX(t, east);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -502,39 +456,17 @@ class _DominoFormState extends State<DominoForm> {
         // center + south + west
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = west!.s + south!.s + tiles[t].y;
+            _addY2(t, west, south);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = west!.s + south!.s + tiles[t].x;
+            _addX2(t, west, south);
           } else if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + south!.s;
-            } else {
-              testScore = tiles[t].y + south!.s;
-            }
+            _addEndY(t, south);
           } else if (tiles[t].y == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + south!.s;
-            } else {
-              testScore = tiles[t].x + south!.s;
-            }
+            _addEndX(t, south);
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s;
-            } else {
-              testScore = tiles[t].y + west!.s;
-            }
+            _addEndY(t, west);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s;
-            } else {
-              testScore = tiles[t].x + west!.s;
-            }
+            _addEndX(t, west);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -548,39 +480,17 @@ class _DominoFormState extends State<DominoForm> {
         // center + south + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = east!.s + south!.s + tiles[t].y;
+            _addY2(t, east, south);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = east!.s + south!.s + tiles[t].x;
+            _addX2(t, east, south);
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + south!.s;
-            } else {
-              testScore = tiles[t].y + south!.s;
-            }
+            _addEndY(t, south);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + south!.s;
-            } else {
-              testScore = tiles[t].x + south!.s;
-            }
+            _addEndX(t, south);
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s;
-            } else {
-              testScore = tiles[t].y + east!.s;
-            }
+            _addEndY(t, east);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s;
-            } else {
-              testScore = tiles[t].x + east!.s;
-            }
+            _addEndX(t, east);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -595,53 +505,21 @@ class _DominoFormState extends State<DominoForm> {
 
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].y + north!.s + west!.s + south!.s;
+            _addY3(t, north, west, south);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].x + north!.s + west!.s + south!.s;
+            _addX3(t, north, west, south);
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + west!.s + south!.s;
-            }
+            _addEndY2(t, west, south);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + west!.s + south!.s;
-            }
+            _addEndX2(t, west, south);
           } else if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + north!.s + south!.s;
-            }
+            _addEndY2(t, north, south);
           } else if (tiles[t].y == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + north!.s + south!.s;
-            }
+            _addEndX2(t, north, south);
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + west!.s;
-            } else {
-              testScore = tiles[t].y + north!.s + west!.s;
-            }
+            _addEndY2(t, north, west);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + west!.s;
-            } else {
-              testScore = tiles[t].x + north!.s + west!.s;
-            }
+            _addEndX2(t, north, west);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -655,53 +533,21 @@ class _DominoFormState extends State<DominoForm> {
         // center + north + south + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].y + north!.s + east!.s + south!.s;
+            _addY3(t, north, east, south);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].x + north!.s + east!.s + south!.s;
+            _addX3(t, north, east, south);
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + east!.s + south!.s;
-            }
+            _addEndY2(t, east, south);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + east!.s + south!.s;
-            }
+            _addEndX2(t, east, south);
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + north!.s + south!.s;
-            }
+            _addEndY2(t, north, south);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + north!.s + south!.s;
-            }
+            _addEndX2(t, north, south);
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + east!.s;
-            } else {
-              testScore = tiles[t].y + north!.s + east!.s;
-            }
+            _addEndY2(t, north, east);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + east!.s;
-            } else {
-              testScore = tiles[t].x + north!.s + east!.s;
-            }
+            _addEndX2(t, north, east);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -715,53 +561,21 @@ class _DominoFormState extends State<DominoForm> {
         // center + west + south + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].y + west!.s + east!.s + south!.s;
+            _addY3(t, east, west, south);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].x + west!.s + east!.s + south!.s;
+            _addX3(t, east, west, south);
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s + west!.s;
-            } else {
-              testScore = tiles[t].y + east!.s + west!.s;
-            }
+            _addEndY2(t, east, west);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s + west!.s;
-            } else {
-              testScore = tiles[t].x + east!.s + west!.s;
-            }
+            _addEndX2(t, east, west);
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + west!.s + south!.s;
-            }
+            _addEndY2(t, south, west);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + west!.s + south!.s;
-            }
+            _addEndX2(t, south, west);
           } else if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + south!.s + east!.s;
-            } else {
-              testScore = tiles[t].y + south!.s + east!.s;
-            }
+            _addEndY2(t, south, east);
           } else if (tiles[t].y == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + west!.s + south!.s;
-            }
+            _addEndX2(t, south, east);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -775,53 +589,21 @@ class _DominoFormState extends State<DominoForm> {
         // center + west + north + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].y + west!.s + east!.s + north!.s;
+            _addY3(t, east, west, north);
           } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].x + west!.s + east!.s + north!.s;
+            _addX3(t, east, west, north);
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s + west!.s;
-            } else {
-              testScore = tiles[t].y + east!.s + west!.s;
-            }
+            _addEndY2(t, east, west);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s + west!.s;
-            } else {
-              testScore = tiles[t].x + east!.s + west!.s;
-            }
+            _addEndX2(t, east, west);
           } else if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + east!.s + north!.s;
-            } else {
-              testScore = tiles[t].y + east!.s + north!.s;
-            }
-          } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + north!.s;
-            } else {
-              testScore = tiles[t].x + west!.s + north!.s;
-            }
+            _addEndY2(t, east, north);
+          } else if (tiles[t].y == west?.x) {
+            _addEndX2(t, east, north);
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + north!.s;
-            } else {
-              testScore = tiles[t].y + west!.s + north!.s;
-            }
+            _addEndY2(t, west, north);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + north!.s;
-            } else {
-              testScore = tiles[t].x + west!.s + north!.s;
-            }
+            _addEndX2(t, west, north);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -835,61 +617,21 @@ class _DominoFormState extends State<DominoForm> {
         // center + north + south + west + east
         for (int t = 0; t < tiles.length; t++) {
           if (tiles[t].x == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + east!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + north!.s + east!.s + south!.s;
-            }
+            _addEndY3(t, north, east, south);
           } else if (tiles[t].y == west?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + east!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + north!.s + east!.s + south!.s;
-            }
+            _addEndX3(t, north, east, south);
           } else if (tiles[t].x == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + east!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + west!.s + east!.s + south!.s;
-            }
+            _addEndY3(t, west, east, south);
           } else if (tiles[t].y == north?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + west!.s + east!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + west!.s + east!.s + south!.s;
-            }
+            _addEndX3(t, west, east, south);
           } else if (tiles[t].x == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + west!.s + south!.s;
-            } else {
-              testScore = tiles[t].y + north!.s + west!.s + south!.s;
-            }
+            _addEndY3(t, north, west, south);
           } else if (tiles[t].y == east?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + west!.s + south!.s;
-            } else {
-              testScore = tiles[t].x + north!.s + west!.s + south!.s;
-            }
+            _addEndX3(t, north, west, south);
           } else if (tiles[t].x == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + east!.s + west!.s;
-            } else {
-              testScore = tiles[t].y + north!.s + east!.s + west!.s;
-            }
+            _addEndY3(t, north, east, west);
           } else if (tiles[t].y == south?.x) {
-            matchList.add(tiles[t]);
-            if (tiles[t].s > 0) {
-              testScore = tiles[t].s + north!.s + east!.s + west!.s;
-            } else {
-              testScore = tiles[t].x + north!.s + east!.s + west!.s;
-            }
+            _addEndX3(t, north, east, west);
           }
           if (testScore % 5 == 0 && testScore > maxScore) {
             maxScore = testScore;
@@ -915,8 +657,7 @@ class _DominoFormState extends State<DominoForm> {
           title: const Text('DB\'r Domino Solver'),
           foregroundColor: Colors.lightBlueAccent,
           centerTitle: true,
-          backgroundColor:
-              const Color.fromRGBO(14, 110, 140, 0.5333333333333333)),
+          backgroundColor: const Color.fromRGBO(14, 110, 140, 0.5)),
       body: Column(children: [
         const Divider(
           height: 10,
@@ -1044,9 +785,15 @@ class _DominoFormState extends State<DominoForm> {
           indent: 5,
           endIndent: 5,
         ),
-        const Text(
-          style: TextStyle(fontSize: 20, color: Colors.green),
-          ' Selection ',
+        TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.blueAccent,
+          ),
+          onPressed: () async {
+            _solve();
+          },
+          child: const Text('Solve'),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1080,23 +827,14 @@ class _DominoFormState extends State<DominoForm> {
                 ));
           }),
         ),
-        TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.white,
-            backgroundColor: Colors.blueAccent,
-          ),
-          onPressed: () async {
-            _solve();
-          },
-          child: const Text('Solve'),
-        ),
         const Divider(
-          color: Colors.red,
-          height: 10,
-          thickness: 2,
-          indent: 20,
-          endIndent: 20,
+          color: Colors.blue,
+          height: 5,
+          thickness: 0,
+          indent: 5,
+          endIndent: 5,
         ),
+
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -1252,20 +990,23 @@ class _DominoFormState extends State<DominoForm> {
           visible: _visibleResults,
           child: Column(
             children: [
-              const Text(
-                style: TextStyle(fontSize: 20, color: Colors.green),
-                ' Matches ',
+              const Divider(
+                color: Colors.blue,
+                height: 5,
+                thickness: 0,
+                indent: 5,
+                endIndent: 5,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(matchList.length, (index) {
                   return Center(
-                    child: SizedBox(
+                    child: SizedBox (
                         width: iconWidth,
                         height: iconHeight,
                         child: Image.asset(
                             'assets/${matchList[index].name}.png',
-                            fit: BoxFit.cover)),
+                            fit: BoxFit.contain)),
                   );
                 }),
               ),
@@ -1279,7 +1020,7 @@ class _DominoFormState extends State<DominoForm> {
                         width: iconWidth,
                         height: iconHeight,
                         child: Image.asset('assets/${result.name}.png',
-                            fit: BoxFit.cover))
+                            fit: BoxFit.contain))
                     : const Text(
                         style: TextStyle(fontSize: 20, color: Colors.green),
                         ' No Scoring moves ',
