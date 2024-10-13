@@ -242,6 +242,13 @@ class _DominoFormState extends State<DominoForm> {
     }
   }
 
+  void _addResult(int t) {
+    if (testScore % 5 == 0 && testScore > maxScore) {
+      maxScore = testScore;
+      result = tiles[t];
+    }
+  }
+
   void _solve() {
     result = Tile('', 0, 0, 0);
     maxScore = 0;
@@ -259,10 +266,7 @@ class _DominoFormState extends State<DominoForm> {
             matchList.add(tiles[t]);
             testScore = tiles[t].x + center!.s;
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east == null &&
@@ -281,10 +285,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == west?.x) {
             _addEndX(t, center);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west == null &&
           east != null &&
@@ -303,10 +304,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == east?.x) {
             _addEndX(t, center);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west == null &&
           east == null &&
@@ -325,10 +323,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == north?.x) {
             _addEndX(t, center);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west == null &&
           east == null &&
@@ -348,10 +343,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == south?.x) {
             _addEndX(t, center);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west == null &&
           east == null &&
@@ -372,10 +364,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == south?.x) {
             _addEndX(t, north);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east != null &&
@@ -396,10 +385,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == east?.x) {
             _addEndX(t, west);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east == null &&
@@ -420,10 +406,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == north?.x) {
             _addEndX(t, west);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west == null &&
           east != null &&
@@ -444,10 +427,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == north?.x) {
             _addEndX(t, east);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east == null &&
@@ -468,10 +448,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == south?.x) {
             _addEndX(t, west);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west == null &&
           east != null &&
@@ -492,10 +469,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == south?.x) {
             _addEndX(t, east);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east == null &&
@@ -521,10 +495,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == south?.x) {
             _addEndX2(t, north, west);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west == null &&
           east != null &&
@@ -549,10 +520,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == south?.x) {
             _addEndX2(t, north, east);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east != null &&
@@ -577,10 +545,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == west?.x) {
             _addEndX2(t, south, east);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east != null &&
@@ -605,10 +570,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == east?.x) {
             _addEndX2(t, west, north);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       } else if (west != null &&
           east != null &&
@@ -633,10 +595,7 @@ class _DominoFormState extends State<DominoForm> {
           } else if (tiles[t].y == south?.x) {
             _addEndX3(t, north, east, west);
           }
-          if (testScore % 5 == 0 && testScore > maxScore) {
-            maxScore = testScore;
-            result = tiles[t];
-          }
+          _addResult(t);
         }
       }
     }
