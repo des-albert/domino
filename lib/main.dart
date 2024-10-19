@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Domino Assistant',
+      title: 'Domino Double Nine Assistant',
       theme: ThemeData(
           scaffoldBackgroundColor: const Color.fromRGBO(
               144, 224, 238, 0.25) // Set background color here
@@ -34,8 +34,9 @@ class Tile {
   final int x;
   final int y;
   final int s;
+  String m;
 
-  Tile(this.name, this.x, this.y, this.s);
+  Tile(this.name, this.x, this.y, this.s, this.m);
 }
 
 class DominoForm extends StatefulWidget {
@@ -54,90 +55,91 @@ class _DominoFormState extends State<DominoForm> {
   int testScore = 0;
 
   List<Tile> bones = [
-    Tile('0-0', 0, 0, 0),
-    Tile('1-0', 1, 0, 0),
-    Tile('1-1', 1, 1, 2),
-    Tile('2-0', 2, 0, 0),
-    Tile('2-1', 2, 1, 0),
-    Tile('2-2', 2, 2, 4),
-    Tile('3-0', 3, 0, 0),
-    Tile('3-1', 3, 1, 0),
-    Tile('3-2', 3, 2, 0),
-    Tile('3-3', 3, 3, 6),
-    Tile('4-0', 4, 0, 0),
-    Tile('4-1', 4, 1, 0),
-    Tile('4-2', 4, 2, 0),
-    Tile('4-3', 4, 3, 0),
-    Tile('4-4', 4, 4, 8),
-    Tile('5-0', 5, 0, 0),
-    Tile('5-1', 5, 1, 0),
-    Tile('5-2', 5, 2, 0),
-    Tile('5-3', 5, 3, 0),
-    Tile('5-4', 5, 4, 0),
-    Tile('5-5', 5, 5, 10),
-    Tile('6-0', 6, 0, 0),
-    Tile('6-1', 6, 1, 0),
-    Tile('6-2', 6, 2, 0),
-    Tile('6-3', 6, 3, 0),
-    Tile('6-4', 6, 4, 0),
-    Tile('6-5', 6, 5, 0),
-    Tile('6-6', 6, 6, 12),
-    Tile('7-0', 7, 0, 0),
-    Tile('7-1', 7, 1, 0),
-    Tile('7-2', 7, 2, 0),
-    Tile('7-3', 7, 3, 0),
-    Tile('7-4', 7, 4, 0),
-    Tile('7-5', 7, 5, 0),
-    Tile('7-6', 7, 6, 0),
-    Tile('7-7', 7, 7, 14),
-    Tile('8-0', 8, 0, 0),
-    Tile('8-1', 8, 1, 0),
-    Tile('8-2', 8, 2, 0),
-    Tile('8-3', 8, 3, 0),
-    Tile('8-4', 8, 4, 0),
-    Tile('8-5', 8, 5, 0),
-    Tile('8-6', 8, 6, 0),
-    Tile('8-7', 8, 7, 0),
-    Tile('8-8', 8, 8, 16),
-    Tile('9-0', 9, 0, 0),
-    Tile('9-1', 9, 1, 0),
-    Tile('9-2', 9, 2, 0),
-    Tile('9-3', 9, 3, 0),
-    Tile('9-4', 9, 4, 0),
-    Tile('9-5', 9, 5, 0),
-    Tile('9-6', 9, 6, 0),
-    Tile('9-7', 9, 7, 0),
-    Tile('9-8', 9, 8, 0),
-    Tile('9-9', 9, 9, 18),
+    Tile('0-0', 0, 0, 0, ""),
+    Tile('1-0', 1, 0, 0, ""),
+    Tile('1-1', 1, 1, 2, ""),
+    Tile('2-0', 2, 0, 0, ""),
+    Tile('2-1', 2, 1, 0, ""),
+    Tile('2-2', 2, 2, 4, ""),
+    Tile('3-0', 3, 0, 0, ""),
+    Tile('3-1', 3, 1, 0, ""),
+    Tile('3-2', 3, 2, 0, ""),
+    Tile('3-3', 3, 3, 6, ""),
+    Tile('4-0', 4, 0, 0, ""),
+    Tile('4-1', 4, 1, 0, ""),
+    Tile('4-2', 4, 2, 0, ""),
+    Tile('4-3', 4, 3, 0, ""),
+    Tile('4-4', 4, 4, 8, ""),
+    Tile('5-0', 5, 0, 0, ""),
+    Tile('5-1', 5, 1, 0, ""),
+    Tile('5-2', 5, 2, 0, ""),
+    Tile('5-3', 5, 3, 0, ""),
+    Tile('5-4', 5, 4, 0, ""),
+    Tile('5-5', 5, 5, 10, ""),
+    Tile('6-0', 6, 0, 0, ""),
+    Tile('6-1', 6, 1, 0, ""),
+    Tile('6-2', 6, 2, 0, ""),
+    Tile('6-3', 6, 3, 0, ""),
+    Tile('6-4', 6, 4, 0, ""),
+    Tile('6-5', 6, 5, 0, ""),
+    Tile('6-6', 6, 6, 12, ""),
+    Tile('7-0', 7, 0, 0, ""),
+    Tile('7-1', 7, 1, 0, ""),
+    Tile('7-2', 7, 2, 0, ""),
+    Tile('7-3', 7, 3, 0, ""),
+    Tile('7-4', 7, 4, 0, ""),
+    Tile('7-5', 7, 5, 0, ""),
+    Tile('7-6', 7, 6, 0, ""),
+    Tile('7-7', 7, 7, 14, ""),
+    Tile('8-0', 8, 0, 0, ""),
+    Tile('8-1', 8, 1, 0, ""),
+    Tile('8-2', 8, 2, 0, ""),
+    Tile('8-3', 8, 3, 0, ""),
+    Tile('8-4', 8, 4, 0, ""),
+    Tile('8-5', 8, 5, 0, ""),
+    Tile('8-6', 8, 6, 0, ""),
+    Tile('8-7', 8, 7, 0, ""),
+    Tile('8-8', 8, 8, 16, ""),
+    Tile('9-0', 9, 0, 0, ""),
+    Tile('9-1', 9, 1, 0, ""),
+    Tile('9-2', 9, 2, 0, ""),
+    Tile('9-3', 9, 3, 0, ""),
+    Tile('9-4', 9, 4, 0, ""),
+    Tile('9-5', 9, 5, 0, ""),
+    Tile('9-6', 9, 6, 0, ""),
+    Tile('9-7', 9, 7, 0, ""),
+    Tile('9-8', 9, 8, 0, ""),
+    Tile('9-9', 9, 9, 18, ""),
   ];
 
   List<Tile> table = [
-    Tile('0', 0, 0, 0),
-    Tile('1', 1, 0, 1),
-    Tile('2', 2, 0, 2),
-    Tile('3', 3, 0, 3),
-    Tile('4', 4, 0, 4),
-    Tile('5', 5, 0, 5),
-    Tile('6', 6, 0, 6),
-    Tile('7', 7, 0, 7),
-    Tile('8', 8, 0, 8),
-    Tile('9', 9, 0, 9),
-    Tile('0-0', 0, 0, 0),
-    Tile('1-1', 1, 1, 2),
-    Tile('2-2', 2, 2, 4),
-    Tile('3-3', 3, 3, 6),
-    Tile('4-4', 4, 4, 8),
-    Tile('5-5', 5, 5, 10),
-    Tile('6-6', 6, 6, 12),
-    Tile('7-7', 7, 7, 14),
-    Tile('8-8', 8, 8, 16),
-    Tile('9-9', 9, 9, 18),
+    Tile('0', 0, 0, 0, ""),
+    Tile('1', 1, 0, 1, ""),
+    Tile('2', 2, 0, 2, ""),
+    Tile('3', 3, 0, 3, ""),
+    Tile('4', 4, 0, 4, ""),
+    Tile('5', 5, 0, 5, ""),
+    Tile('6', 6, 0, 6, ""),
+    Tile('7', 7, 0, 7, ""),
+    Tile('8', 8, 0, 8, ""),
+    Tile('9', 9, 0, 9, ""),
+    Tile('0-0', 0, 0, 0, ""),
+    Tile('1-1', 1, 1, 2, ""),
+    Tile('2-2', 2, 2, 4, ""),
+    Tile('3-3', 3, 3, 6, ""),
+    Tile('4-4', 4, 4, 8, ""),
+    Tile('5-5', 5, 5, 10, ""),
+    Tile('6-6', 6, 6, 12, ""),
+    Tile('7-7', 7, 7, 14, ""),
+    Tile('8-8', 8, 8, 16, ""),
+    Tile('9-9', 9, 9, 18, ""),
   ];
 
   Tile? north, south, west, center, east;
 
-  Tile result = Tile('', 0, 0, 0);
+  Tile result = Tile('', 0, 0, 0, "");
   int maxScore = 0;
+  String pos = '';
   String matchString = "";
   List<Tile> matchList = [];
   List<Tile> tiles = [];
@@ -145,15 +147,18 @@ class _DominoFormState extends State<DominoForm> {
   bool _visibleResults = false;
 
   void _addPile(Tile tile) {
-    tiles.add(tile);
-    if (tiles.length <= 11) {
-      topLength = tiles.length;
-      bottomLength = 0;
-    } else {
-      topLength = 11;
-      bottomLength = tiles.length - 11;
+    if (!tiles.contains(tile)) {
+      tiles.add(tile);
+      tile.m = "s";
+      if (tiles.length <= 11) {
+        topLength = tiles.length;
+        bottomLength = 0;
+      } else {
+        topLength = 11;
+        bottomLength = tiles.length - 11;
+      }
+      setState(() {});
     }
-    setState(() {});
   }
 
   void _deletePile(Tile tile) {
@@ -168,89 +173,143 @@ class _DominoFormState extends State<DominoForm> {
     setState(() {});
   }
 
-  void _addEndX(int t, Tile? p) {
-    matchList.add(tiles[t]);
-    if (tiles[t].s > 0) {
-      testScore = tiles[t].s + p!.s;
-    } else {
+  void _addEndX(int t, Tile? p, Tile? m) {
+    if (tiles[t].y == m?.x) {
+      _matchAdd(t);
+      if (tiles[t].s > 0) {
+        testScore = tiles[t].s + p!.s;
+      } else {
+        testScore = tiles[t].x + p!.s;
+      }
+      _addResult(t, m);
+    }
+  }
+
+  void _addEndY(int t, Tile? p, Tile? m) {
+    if (tiles[t].x == m?.x) {
+      _matchAdd(t);
+      if (tiles[t].s > 0) {
+        testScore = tiles[t].s + p!.s;
+      } else {
+        testScore = tiles[t].y + p!.s;
+      }
+      _addResult(t, m);
+    }
+  }
+
+  void _addEndX2(int t, Tile? p, Tile? q, Tile? m) {
+    if (tiles[t].y == m?.x) {
+      _matchAdd(t);
+      if (tiles[t].s > 0) {
+        testScore = tiles[t].s + p!.s + q!.s;
+      } else {
+        testScore = tiles[t].x + p!.s + q!.s;
+      }
+      _addResult(t, m);
+    }
+  }
+
+  void _addEndY2(int t, Tile? p, Tile? q, Tile? m) {
+    if (tiles[t].x == m?.x) {
+      _matchAdd(t);
+      if (tiles[t].s > 0) {
+        testScore = tiles[t].s + p!.s + q!.s;
+      } else {
+        testScore = tiles[t].y + p!.s + q!.s;
+      }
+      _addResult(t, m);
+    }
+  }
+
+  void _addEndX3(int t, Tile? p, Tile? q, Tile? r, Tile? m) {
+    if (tiles[t].y == m?.x) {
+      _matchAdd(t);
+      if (tiles[t].s > 0) {
+        testScore = tiles[t].s + p!.s + q!.s + r!.s;
+      } else {
+        testScore = tiles[t].x + p!.s + q!.s + r!.s;
+      }
+      _addResult(t, m);
+    }
+  }
+
+  void _addEndY3(int t, Tile? p, Tile? q, Tile? r, Tile? m) {
+    if (tiles[t].x == m?.x) {
+      _matchAdd(t);
+      if (tiles[t].s > 0) {
+        testScore = tiles[t].s + p!.s + q!.s + r!.s;
+      } else {
+        testScore = tiles[t].y + p!.s + q!.s + r!.s;
+      }
+      _addResult(t, m);
+    }
+  }
+
+  void _addX(int t, Tile? p, Tile? m) {
+    if (tiles[t].y == m?.x) {
+      _matchAdd(t);
       testScore = tiles[t].x + p!.s;
+      _addResult(t, m);
     }
   }
 
-  void _addEndY(int t, Tile? p) {
-    matchList.add(tiles[t]);
-    if (tiles[t].s > 0) {
-      testScore = tiles[t].s + p!.s;
-    } else {
+  void _addY(int t, Tile? p, Tile? m) {
+    if (tiles[t].x == m?.x) {
+      _matchAdd(t);
       testScore = tiles[t].y + p!.s;
+      _addResult(t, m);
     }
   }
 
-  void _addEndX2(int t, Tile? p, Tile? q) {
-    matchList.add(tiles[t]);
-    if (tiles[t].s > 0) {
-      testScore = tiles[t].s + p!.s + q!.s;
-    } else {
+  void _addX2(int t, Tile? p, Tile? q, Tile? m) {
+    if (tiles[t].y == m?.x) {
+      _matchAdd(t);
       testScore = tiles[t].x + p!.s + q!.s;
+      _addResult(t, m);
     }
   }
 
-  void _addEndY2(int t, Tile? p, Tile? q) {
-    matchList.add(tiles[t]);
-    if (tiles[t].s > 0) {
-      testScore = tiles[t].s + p!.s + q!.s;
-    } else {
+  void _addY2(int t, Tile? p, Tile? q, Tile? m) {
+    if (tiles[t].x == m?.x) {
+      _matchAdd(t);
       testScore = tiles[t].y + p!.s + q!.s;
+      _addResult(t, m);
     }
   }
 
-  void _addX2(int t, Tile? p, Tile? q) {
-    matchList.add(tiles[t]);
-    testScore = tiles[t].x + p!.s + q!.s;
-  }
-
-  void _addY2(int t, Tile? p, Tile? q) {
-    matchList.add(tiles[t]);
-    testScore = tiles[t].y + p!.s + q!.s;
-  }
-
-  void _addX3(int t, Tile? p, Tile? q, Tile? r) {
-    matchList.add(tiles[t]);
-    testScore = tiles[t].x + p!.s + q!.s + r!.s;
-  }
-
-  void _addY3(int t, Tile? p, Tile? q, Tile? r) {
-    matchList.add(tiles[t]);
-    testScore = tiles[t].y + p!.s + q!.s + r!.s;
-  }
-
-  void _addEndX3(int t, Tile? p, Tile? q, Tile? r) {
-    matchList.add(tiles[t]);
-    if (tiles[t].s > 0) {
-      testScore = tiles[t].s + p!.s + q!.s + r!.s;
-    } else {
+  void _addX3(int t, Tile? p, Tile? q, Tile? r, Tile? m) {
+    if (tiles[t].y == m?.x) {
+      _matchAdd(t);
       testScore = tiles[t].x + p!.s + q!.s + r!.s;
+      _addResult(t, m);
     }
   }
 
-  void _addEndY3(int t, Tile? p, Tile? q, Tile? r) {
-    matchList.add(tiles[t]);
-    if (tiles[t].s > 0) {
-      testScore = tiles[t].s + p!.s + q!.s + r!.s;
-    } else {
+  void _addY3(int t, Tile? p, Tile? q, Tile? r, Tile? m) {
+    if (tiles[t].x == m?.x) {
+      _matchAdd(t);
       testScore = tiles[t].y + p!.s + q!.s + r!.s;
+      _addResult(t, m);
     }
   }
 
-  void _addResult(int t) {
+  void _addResult(int t, Tile? p) {
     if (testScore % 5 == 0 && testScore > maxScore) {
       maxScore = testScore;
       result = tiles[t];
+      pos = p!.m;
+    }
+  }
+
+  void _matchAdd(int t) {
+    if (!matchList.contains(tiles[t])) {
+      matchList.add(tiles[t]);
     }
   }
 
   void _solve() {
-    result = Tile('', 0, 0, 0);
+    result = Tile('', 0, 0, 0, "");
+    pos = '';
     maxScore = 0;
     matchList = [];
 
@@ -259,71 +318,48 @@ class _DominoFormState extends State<DominoForm> {
         // center
 
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].y + center!.s;
-          } else if (tiles[t].y == center?.y) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].x + center!.s;
-          }
-          _addResult(t);
+          _addY(t, center, center);
+          _addX(t, center, center);
         }
       } else if (west != null &&
           east == null &&
           north == null &&
           south == null) {
         // center + west
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].y + west!.x;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = tiles[t].x + west!.x;
-          } else if (tiles[t].x == west?.x) {
-            _addEndY(t, center);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX(t, center);
-          }
-          _addResult(t);
+          _addY(t, west, center);
+          _addX(t, west, center);
+
+          _addEndY(t, center, west);
+          _addEndX(t, center, west);
         }
       } else if (west == null &&
           east != null &&
           north == null &&
           south == null) {
         // center + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = east!.x + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = east!.x + tiles[t].x;
-          } else if (tiles[t].x == east?.x) {
-            _addEndY(t, center);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX(t, center);
-          }
-          _addResult(t);
+          _addY(t, east, center);
+          _addX(t, east, center);
+
+          _addEndY(t, center, east);
+          _addEndX(t, center, east);
         }
       } else if (west == null &&
           east == null &&
           north != null &&
           south == null) {
         // center + north
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = north!.x + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = north!.x + tiles[t].x;
-          } else if (tiles[t].x == north?.x) {
-            _addEndY(t, center);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX(t, center);
-          }
-          _addResult(t);
+          _addY(t, north, center);
+          _addX(t, north, center);
+
+          _addEndY(t, center, north);
+          _addEndX(t, center, north);
+          ;
         }
       } else if (west == null &&
           east == null &&
@@ -332,144 +368,108 @@ class _DominoFormState extends State<DominoForm> {
         // center + south
 
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = south!.x + tiles[t].y;
-          } else if (tiles[t].y == center?.x) {
-            matchList.add(tiles[t]);
-            testScore = south!.x + tiles[t].x;
-          } else if (tiles[t].x == south?.x) {
-            _addEndY(t, center);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX(t, center);
-          }
-          _addResult(t);
+          _addY(t, south, center);
+          _addX(t, south, center);
+
+          _addEndY(t, center, south);
+          _addEndX(t, center, south);
         }
       } else if (west == null &&
           east == null &&
           north != null &&
           south != null) {
         // center + north + south
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY2(t, north, south);
-          } else if (tiles[t].y == center?.x) {
-            _addX2(t, north, south);
-          } else if (tiles[t].x == north?.x) {
-            _addEndY(t, south);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX(t, south);
-          } else if (tiles[t].x == south?.x) {
-            _addEndY(t, north);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX(t, north);
-          }
-          _addResult(t);
+          _addY2(t, north, south, center);
+          _addX2(t, north, south, center);
+
+          _addEndY(t, south, north);
+          _addEndX(t, south, north);
+
+          _addEndY(t, north, south);
+          _addEndX(t, north, south);
         }
       } else if (west != null &&
           east != null &&
           north == null &&
           south == null) {
         // center + west + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY2(t, west, east);
-          } else if (tiles[t].y == center?.x) {
-            _addX2(t, west, east);
-          } else if (tiles[t].x == west?.x) {
-            _addEndY(t, east);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX(t, east);
-          } else if (tiles[t].x == east?.x) {
-            _addEndY(t, west);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX(t, west);
-          }
-          _addResult(t);
+          _addY2(t, west, east, center);
+          _addX2(t, west, east, center);
+
+          _addEndY(t, east, west);
+          _addEndX(t, east, west);
+
+          _addEndY(t, west, east);
+          _addEndX(t, west, east);
+          ;
         }
       } else if (west != null &&
           east == null &&
           north != null &&
           south == null) {
         // center + north + west
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY2(t, west, north);
-          } else if (tiles[t].y == center?.x) {
-            _addX2(t, west, north);
-          } else if (tiles[t].x == west?.x) {
-            _addEndY(t, north);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX(t, north);
-          } else if (tiles[t].x == north?.x) {
-            _addEndY(t, west);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX(t, west);
-          }
-          _addResult(t);
+          _addY2(t, west, north, center);
+          _addX2(t, west, north, center);
+
+          _addEndY(t, north, west);
+          _addEndX(t, north, west);
+
+          _addEndY(t, west, north);
+          _addEndX(t, west, north);
         }
       } else if (west == null &&
           east != null &&
           north != null &&
           south == null) {
         // center + north + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY2(t, east, north);
-          } else if (tiles[t].y == center?.x) {
-            _addX2(t, east, north);
-          } else if (tiles[t].x == east?.x) {
-            _addEndY(t, north);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX(t, north);
-          } else if (tiles[t].x == north?.x) {
-            _addEndY(t, east);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX(t, east);
-          }
-          _addResult(t);
+          _addY2(t, east, north, center);
+          _addX2(t, east, north, center);
+
+          _addEndY(t, north, east);
+          _addEndX(t, north, east);
+
+          _addEndY(t, east, north);
+          _addEndX(t, east, north);
         }
       } else if (west != null &&
           east == null &&
           north == null &&
           south != null) {
         // center + south + west
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY2(t, west, south);
-          } else if (tiles[t].y == center?.x) {
-            _addX2(t, west, south);
-          } else if (tiles[t].x == west?.x) {
-            _addEndY(t, south);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX(t, south);
-          } else if (tiles[t].x == south?.x) {
-            _addEndY(t, west);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX(t, west);
-          }
-          _addResult(t);
+          _addY2(t, west, south, center);
+          _addX2(t, west, south, center);
+
+          _addEndY(t, south, west);
+          _addEndX(t, south, west);
+
+          _addEndY(t, west, south);
+          _addEndX(t, west, south);
         }
       } else if (west == null &&
           east != null &&
           north == null &&
           south != null) {
         // center + south + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY2(t, east, south);
-          } else if (tiles[t].y == center?.x) {
-            _addX2(t, east, south);
-          } else if (tiles[t].x == east?.x) {
-            _addEndY(t, south);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX(t, south);
-          } else if (tiles[t].x == south?.x) {
-            _addEndY(t, east);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX(t, east);
-          }
-          _addResult(t);
+          _addY2(t, east, south, center);
+          _addX2(t, east, south, center);
+
+          _addEndY(t, south, east);
+          _addEndX(t, south, east);
+
+          _addEndY(t, east, south);
+          _addEndX(t, east, south);
         }
       } else if (west != null &&
           east == null &&
@@ -478,133 +478,97 @@ class _DominoFormState extends State<DominoForm> {
         // center + north + south + west
 
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY3(t, north, west, south);
-          } else if (tiles[t].y == center?.x) {
-            _addX3(t, north, west, south);
-          } else if (tiles[t].x == north?.x) {
-            _addEndY2(t, west, south);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX2(t, west, south);
-          } else if (tiles[t].x == west?.x) {
-            _addEndY2(t, north, south);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX2(t, north, south);
-          } else if (tiles[t].x == south?.x) {
-            _addEndY2(t, north, west);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX2(t, north, west);
-          }
-          _addResult(t);
+          _addY3(t, north, west, south, center);
+          _addX3(t, north, west, south, center);
+
+          _addEndY2(t, west, south, north);
+          _addEndX2(t, west, south, north);
+
+          _addEndY2(t, north, south, west);
+          _addEndX2(t, north, south, west);
+
+          _addEndY2(t, north, west, south);
+          _addEndX2(t, north, west, south);
         }
       } else if (west == null &&
           east != null &&
           north != null &&
           south != null) {
         // center + north + south + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY3(t, north, east, south);
-          } else if (tiles[t].y == center?.x) {
-            _addX3(t, north, east, south);
-          } else if (tiles[t].x == north?.x) {
-            _addEndY2(t, east, south);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX2(t, east, south);
-          } else if (tiles[t].x == east?.x) {
-            _addEndY2(t, north, south);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX2(t, north, south);
-          } else if (tiles[t].x == south?.x) {
-            _addEndY2(t, north, east);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX2(t, north, east);
-          }
-          _addResult(t);
+          _addY3(t, north, east, south, center);
+          _addX3(t, north, east, south, center);
+
+          _addEndY2(t, east, south, north);
+          _addEndX2(t, east, south, north);
+
+          _addEndY2(t, north, south, east);
+          _addEndX2(t, north, south, east);
+
+          _addEndY2(t, north, east, south);
+          _addEndX2(t, north, east, south);
         }
       } else if (west != null &&
           east != null &&
           north == null &&
           south != null) {
         // center + west + south + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY3(t, east, west, south);
-          } else if (tiles[t].y == center?.x) {
-            _addX3(t, east, west, south);
-          } else if (tiles[t].x == south?.x) {
-            _addEndY2(t, east, west);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX2(t, east, west);
-          } else if (tiles[t].x == east?.x) {
-            _addEndY2(t, south, west);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX2(t, south, west);
-          } else if (tiles[t].x == west?.x) {
-            _addEndY2(t, south, east);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX2(t, south, east);
-          }
-          _addResult(t);
+          _addY3(t, east, west, south, center);
+          _addX3(t, east, west, south, center);
+
+          _addEndY2(t, east, west, south);
+          _addEndX2(t, east, west, south);
+
+          _addEndY2(t, south, west, east);
+          _addEndX2(t, south, west, east);
+
+          _addEndY2(t, south, east, west);
+          _addEndX2(t, south, east, west);
         }
       } else if (west != null &&
           east != null &&
           north != null &&
           south == null) {
         // center + west + north + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == center?.x) {
-            _addY3(t, east, west, north);
-          } else if (tiles[t].y == center?.x) {
-            _addX3(t, east, west, north);
-          } else if (tiles[t].x == north?.x) {
-            _addEndY2(t, east, west);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX2(t, east, west);
-          } else if (tiles[t].x == west?.x) {
-            _addEndY2(t, east, north);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX2(t, east, north);
-          } else if (tiles[t].x == east?.x) {
-            _addEndY2(t, west, north);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX2(t, west, north);
-          }
-          _addResult(t);
+          _addY3(t, east, west, north, center);
+          _addX3(t, east, west, north, center);
+
+          _addEndY2(t, east, west, north);
+          _addEndX2(t, east, west, north);
+
+          _addEndY2(t, east, north, west);
+          _addEndX2(t, east, north, west);
+
+          _addEndY2(t, west, north, east);
+          _addEndX2(t, west, north, east);
         }
       } else if (west != null &&
           east != null &&
           north != null &&
           south != null) {
         // center + north + south + west + east
+
         for (int t = 0; t < tiles.length; t++) {
-          if (tiles[t].x == west?.x) {
-            _addEndY3(t, north, east, south);
-          } else if (tiles[t].y == west?.x) {
-            _addEndX3(t, north, east, south);
-          } else if (tiles[t].x == north?.x) {
-            _addEndY3(t, west, east, south);
-          } else if (tiles[t].y == north?.x) {
-            _addEndX3(t, west, east, south);
-          } else if (tiles[t].x == east?.x) {
-            _addEndY3(t, north, west, south);
-          } else if (tiles[t].y == east?.x) {
-            _addEndX3(t, north, west, south);
-          } else if (tiles[t].x == south?.x) {
-            _addEndY3(t, north, east, west);
-          } else if (tiles[t].y == south?.x) {
-            _addEndX3(t, north, east, west);
-          }
-          _addResult(t);
+          _addEndY3(t, north, east, south, west);
+          _addEndX3(t, north, east, south, west);
+
+          _addEndY3(t, west, east, south, north);
+          _addEndX3(t, west, east, south, north);
+
+          _addEndY3(t, north, west, south, east);
+          _addEndX3(t, north, west, south, east);
+
+          _addEndY3(t, north, east, west, south);
+          _addEndX3(t, north, east, west, south);
         }
       }
     }
-    matchString = '';
-    if (matchList.isNotEmpty) {
-      for (Tile k in matchList) {
-        matchString += '${k.name} ';
-      }
-    }
+
     _visibleResults = true;
     setState(() {});
   }
@@ -632,8 +596,10 @@ class _DominoFormState extends State<DominoForm> {
               width: iconWidth,
               child: IconButton(
                 padding: EdgeInsets.zero,
-                icon: Image.asset("assets/${bones[index].name}.png",
-                    height: iconHeight, width: iconWidth),
+                icon: bones[index].m == "s"
+                    ? const SizedBox.shrink()
+                    : Image.asset("assets/${bones[index].name}.png",
+                        height: iconHeight, width: iconWidth),
                 onPressed: () async {
                   _addPile(bones[index]);
                 },
@@ -654,14 +620,16 @@ class _DominoFormState extends State<DominoForm> {
             return Container(
               padding: const EdgeInsets.all(0.0),
               width: iconWidth,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: Image.asset("assets/${bones[index + 11].name}.png",
-                    height: iconHeight, width: iconWidth),
-                onPressed: () async {
-                  _addPile(bones[index + 11]);
-                },
-              ),
+              child: bones[index + 11].m == "s"
+                  ? const SizedBox.shrink()
+                  : IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset("assets/${bones[index + 11].name}.png",
+                          height: iconHeight, width: iconWidth),
+                      onPressed: () async {
+                        _addPile(bones[index + 11]);
+                      },
+                    ),
             );
           }),
         ),
@@ -678,14 +646,16 @@ class _DominoFormState extends State<DominoForm> {
             return Container(
               padding: const EdgeInsets.all(0.0),
               width: iconWidth,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: Image.asset("assets/${bones[index + 22].name}.png",
-                    height: iconHeight, width: iconWidth),
-                onPressed: () async {
-                  _addPile(bones[index + 22]);
-                },
-              ),
+              child: bones[index + 22].m == "s"
+                  ? const SizedBox.shrink()
+                  : IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset("assets/${bones[index + 22].name}.png",
+                          height: iconHeight, width: iconWidth),
+                      onPressed: () async {
+                        _addPile(bones[index + 22]);
+                      },
+                    ),
             );
           }),
         ),
@@ -702,14 +672,16 @@ class _DominoFormState extends State<DominoForm> {
             return Container(
               padding: const EdgeInsets.all(0.0),
               width: iconWidth,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: Image.asset("assets/${bones[index + 33].name}.png",
-                    height: iconHeight, width: iconWidth),
-                onPressed: () async {
-                  _addPile(bones[index + 33]);
-                },
-              ),
+              child: bones[index + 33].m == "s"
+                  ? const SizedBox.shrink()
+                  : IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset("assets/${bones[index + 33].name}.png",
+                          height: iconHeight, width: iconWidth),
+                      onPressed: () async {
+                        _addPile(bones[index + 33]);
+                      },
+                    ),
             );
           }),
         ),
@@ -726,23 +698,18 @@ class _DominoFormState extends State<DominoForm> {
             return Container(
               padding: const EdgeInsets.all(0.0),
               width: iconWidth,
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                icon: Image.asset("assets/${bones[index + 44].name}.png",
-                    height: iconHeight, width: iconWidth),
-                onPressed: () async {
-                  _addPile(bones[index + 44]);
-                },
-              ),
+              child: bones[index + 44].m == "s"
+                  ? const SizedBox.shrink()
+                  : IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: Image.asset("assets/${bones[index + 44].name}.png",
+                          height: iconHeight, width: iconWidth),
+                      onPressed: () async {
+                        _addPile(bones[index + 44]);
+                      },
+                    ),
             );
           }),
-        ),
-        const Divider(
-          color: Colors.blue,
-          height: 5,
-          thickness: 2,
-          indent: 5,
-          endIndent: 5,
         ),
         TextButton(
           style: TextButton.styleFrom(
@@ -793,7 +760,6 @@ class _DominoFormState extends State<DominoForm> {
           indent: 5,
           endIndent: 5,
         ),
-
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -820,6 +786,7 @@ class _DominoFormState extends State<DominoForm> {
                   onChanged: (Tile? newValue) {
                     setState(() {
                       north = newValue!;
+                      north?.m = "north";
                     });
                   },
                 ),
@@ -853,6 +820,7 @@ class _DominoFormState extends State<DominoForm> {
                     onChanged: (Tile? newValue) {
                       setState(() {
                         west = newValue!;
+                        west?.m = "west";
                       });
                     }),
               ),
@@ -880,6 +848,7 @@ class _DominoFormState extends State<DominoForm> {
                     onChanged: (Tile? newValue) {
                       setState(() {
                         center = newValue!;
+                        center?.m = "center";
                       });
                     }),
               ),
@@ -907,6 +876,7 @@ class _DominoFormState extends State<DominoForm> {
                     onChanged: (Tile? newValue) {
                       setState(() {
                         east = newValue!;
+                        east?.m = "east";
                       });
                     }),
               ),
@@ -939,6 +909,7 @@ class _DominoFormState extends State<DominoForm> {
                     onChanged: (Tile? newValue) {
                       setState(() {
                         south = newValue!;
+                        south?.m = "south";
                       });
                     }),
               ),
@@ -960,7 +931,7 @@ class _DominoFormState extends State<DominoForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(matchList.length, (index) {
                   return Center(
-                    child: SizedBox (
+                    child: SizedBox(
                         width: iconWidth,
                         height: iconHeight,
                         child: Image.asset(
@@ -971,7 +942,7 @@ class _DominoFormState extends State<DominoForm> {
               ),
               Text(
                 style: const TextStyle(fontSize: 20, color: Colors.green),
-                ' Score $maxScore ',
+                ' Score $maxScore - $pos',
               ),
               Center(
                 child: result.name != ''
