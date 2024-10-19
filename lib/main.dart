@@ -359,7 +359,6 @@ class _DominoFormState extends State<DominoForm> {
 
           _addEndY(t, center, north);
           _addEndX(t, center, north);
-          ;
         }
       } else if (west == null &&
           east == null &&
@@ -405,7 +404,7 @@ class _DominoFormState extends State<DominoForm> {
 
           _addEndY(t, west, east);
           _addEndX(t, west, east);
-          ;
+
         }
       } else if (west != null &&
           east == null &&
