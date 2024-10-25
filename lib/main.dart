@@ -37,7 +37,8 @@ class Tile {
   int f;
 
   Tile(this.name, this.x, this.y, this.s, this.f);
-}
+  
+ }
 
 class DominoForm extends StatefulWidget {
   const DominoForm({super.key});
@@ -135,7 +136,8 @@ class _DominoFormState extends State<DominoForm> {
     Tile('9-9', 9, 9, 18, 0),
   ];
 
-  Tile? north, south, west, center, east;
+  Tile? north, west, center, east, south;
+  Tile? sn, sw, sc, se, ss ;
 
   Tile result = Tile('', 0, 0, 0, 0);
   Color crBack = const Color.fromRGBO(144, 224, 238, 0.25);
@@ -416,7 +418,6 @@ class _DominoFormState extends State<DominoForm> {
 
           _addEndY(t, west, east);
           _addEndX(t, west, east);
-
         }
       } else if (west != null &&
           east == null &&
@@ -657,7 +658,7 @@ class _DominoFormState extends State<DominoForm> {
             return Container(
               padding: const EdgeInsets.all(0.0),
               width: iconWidth,
-              child: bones[index + 22].f== 1
+              child: bones[index + 22].f == 1
                   ? const SizedBox.shrink()
                   : IconButton(
                       padding: EdgeInsets.zero,
@@ -784,7 +785,7 @@ class _DominoFormState extends State<DominoForm> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<Tile>(
-                  value: north,
+                  value: sn,
                   iconSize: 0,
                   isExpanded: true,
                   style: const TextStyle(color: Colors.yellow),
@@ -797,8 +798,8 @@ class _DominoFormState extends State<DominoForm> {
                   }).toList(),
                   onChanged: (Tile? newValue) {
                     setState(() {
-                      north = newValue!;
-                      north?.f = 0;
+                      sn = newValue!;
+                      north = Tile(sn!.name, sn!.x, sn!.y, sn!.s, 0);
                     });
                   },
                 ),
@@ -819,7 +820,7 @@ class _DominoFormState extends State<DominoForm> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<Tile>(
-                    value: west,
+                    value: sw,
                     iconSize: 0,
                     isExpanded: true,
                     style: const TextStyle(color: Colors.yellow),
@@ -832,8 +833,8 @@ class _DominoFormState extends State<DominoForm> {
                     }).toList(),
                     onChanged: (Tile? newValue) {
                       setState(() {
-                        west = newValue!;
-                        west?.f = 1;
+                        sw = newValue!;
+                        west = Tile(sw!.name, sw!.x, sw!.y, sw!.s, 1);
                       });
                     }),
               ),
@@ -848,7 +849,7 @@ class _DominoFormState extends State<DominoForm> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<Tile>(
-                    value: center,
+                    value: sc,
                     iconSize: 0,
                     isExpanded: true,
                     style: const TextStyle(color: Colors.yellow),
@@ -861,8 +862,8 @@ class _DominoFormState extends State<DominoForm> {
                     }).toList(),
                     onChanged: (Tile? newValue) {
                       setState(() {
-                        center = newValue!;
-                        center?.f = 2;
+                        sc= newValue!;
+                        center = Tile(sc!.name, sc!.x, sc!.y, sc!.s, 2);
                       });
                     }),
               ),
@@ -877,7 +878,7 @@ class _DominoFormState extends State<DominoForm> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<Tile>(
-                    value: east,
+                    value: se,
                     iconSize: 0,
                     isExpanded: true,
                     style: const TextStyle(color: Colors.yellow),
@@ -890,8 +891,8 @@ class _DominoFormState extends State<DominoForm> {
                     }).toList(),
                     onChanged: (Tile? newValue) {
                       setState(() {
-                        east = newValue!;
-                        east?.f = 3;
+                        se = newValue!;
+                        east = Tile(se!.name, se!.x, se!.y, se!.s, 3);
                       });
                     }),
               ),
@@ -911,7 +912,7 @@ class _DominoFormState extends State<DominoForm> {
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<Tile>(
-                    value: south,
+                    value: ss,
                     iconSize: 0,
                     isExpanded: true,
                     style: const TextStyle(color: Colors.yellow),
@@ -924,8 +925,8 @@ class _DominoFormState extends State<DominoForm> {
                     }).toList(),
                     onChanged: (Tile? newValue) {
                       setState(() {
-                        south = newValue!;
-                        south?.f = 4;
+                        ss = newValue!;
+                        south = Tile(ss!.name, ss!.x, ss!.y, ss!.s, 4);
                       });
                     }),
               ),
