@@ -37,8 +37,7 @@ class Tile {
   int f;
 
   Tile(this.name, this.x, this.y, this.s, this.f);
-  
- }
+}
 
 class DominoForm extends StatefulWidget {
   const DominoForm({super.key});
@@ -137,7 +136,7 @@ class _DominoFormState extends State<DominoForm> {
   ];
 
   Tile? north, west, center, east, south;
-  Tile? sn, sw, sc, se, ss ;
+  Tile? sn, sw, sc, se, ss;
 
   Tile result = Tile('', 0, 0, 0, 0);
   Color crBack = const Color.fromRGBO(144, 224, 238, 0.25);
@@ -862,7 +861,7 @@ class _DominoFormState extends State<DominoForm> {
                     }).toList(),
                     onChanged: (Tile? newValue) {
                       setState(() {
-                        sc= newValue!;
+                        sc = newValue!;
                         center = Tile(sc!.name, sc!.x, sc!.y, sc!.s, 2);
                       });
                     }),
